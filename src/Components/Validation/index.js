@@ -8,6 +8,10 @@ export const validateDate = (value) => {
 export const validateName = (value) => {
   if (!value) {
     return "Field Required!";
+  } else if (value.length < 3) {
+    return "Minimun 3 Chracter Required!";
+  } else if (value.length > 15) {
+    return "Not More Than 15 Character!";
   }
   return null;
 };

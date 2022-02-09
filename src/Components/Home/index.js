@@ -7,8 +7,10 @@ import {
   Typography,
   Select,
   MenuItem,
+  InputLabel,
+  FormControl,
 } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   validateDate,
   validateName,
@@ -24,24 +26,18 @@ import {
 } from "../Validation";
 import ResultTable from "../ResultTable";
 
-const initialValue = {
-  date: "",
-  name: "",
-  interviewer: "",
-  technology: "",
-  experience: "",
-  round: "",
-  communication: "",
-  practical: "",
-  coding: "",
-  technical: "",
-  notes: "",
-};
+function getCurrentResult(state) {
+  return state.interviewResult.find((t) => t.id === state.current_result) || {};
+}
 
 export default function HomePage() {
   const dispatch = useDispatch();
 
-  const [interviewResultData, setInterviewResultData] = useState(initialValue);
+  const curResult = useSelector(getCurrentResult);
+
+  const [practicalRound, setPracticalRound] = useState(false);
+
+  const [interviewResultData, setInterviewResultData] = useState(curResult);
 
   const [showTable, setShowTable] = useState(false);
 
@@ -63,7 +59,7 @@ export default function HomePage() {
     let curState = { ...interviewResultData };
     curState[name] = value;
     setInterviewResultData(curState);
-
+    console.log("dropdownvalue", value);
     switch (name) {
       case "date":
         setError({ date: validateDate(value) });
@@ -108,20 +104,26 @@ export default function HomePage() {
         type: "Add_Interview_Result",
         payload: interviewResultData,
       });
+    } else {
+      dispatch({
+        type: "Update_Interview_Result",
+        payload: interviewResultData,
+      });
     }
     setShowTable(true);
+    setInterviewResultData({});
   };
 
   return (
     <>
       {!showTable && (
-        <React.Fragment>
+        <>
           <Paper elevation={4} sx={{ p: 4 }}>
             <Typography
               variant="h5"
               sx={{ textDecoration: "underline", mb: 4 }}
             >
-              Interview Result
+              Add Interview Result
             </Typography>
             <Box sx={{ mb: 4 }}>
               <TextField
@@ -129,7 +131,7 @@ export default function HomePage() {
                 type="date"
                 name="date"
                 label="Date"
-                vlaue={interviewResultData.date}
+                value={interviewResultData.date || ""}
                 onChange={(e) => setDataHandler("date", e.target.value)}
                 variant="outlined"
                 error={!!error.date}
@@ -145,43 +147,63 @@ export default function HomePage() {
                 type="text"
                 name="name"
                 label="Name"
-                vlaue={interviewResultData.name}
+                value={interviewResultData.name || ""}
                 onChange={(e) => setDataHandler("name", e.target.value)}
                 variant="outlined"
                 error={!!error.name}
                 helperText={error.name}
               />
-              <Select
-                sx={{ width: "45%", mr: 2 }}
-                value={interviewResultData.interviewer}
-                label="Interviewer"
-                error={!!error.name}
-                helperText={error.name}
-                onChange={(e) => setDataHandler("interviewer", e.target.value)}
-              >
-                <MenuItem value={10}>Meet</MenuItem>
-                <MenuItem value={20}>Jaydeep</MenuItem>
-                <MenuItem value={30}>Jatin</MenuItem>
-                <MenuItem value={40}>Nitin</MenuItem>
-              </Select>
+              <FormControl sx={{ width: "45%", mr: 2 }}>
+                <InputLabel id="demo-simple-select-label">
+                  Interviewer
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="interviewer"
+                  label="Interviewer"
+                  sx={{ textAlign: "left" }}
+                  value={interviewResultData.interviewer || ""}
+                  onChange={(e) =>
+                    setDataHandler("interviewer", e.target.value)
+                  }
+                  error={!!error.interviewer}
+                  helperText={error.interviewer}
+                >
+                  <MenuItem value="Renish">Renish</MenuItem>
+                  <MenuItem value="Dhaval">Dhaval</MenuItem>
+                  <MenuItem value="Riddhi">Riddhi</MenuItem>
+                  <MenuItem value="Malay">Malay</MenuItem>
+                  <MenuItem value="Nirmal">Nirmal</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             <Box sx={{ mb: 4, ml: 2 }}>
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="text"
-                name="technology"
-                vlaue={interviewResultData.technology}
-                onChange={(e) => setDataHandler("technology", e.target.value)}
-                label="Technology"
-                variant="outlined"
-                error={!!error.technology}
-                helperText={error.technology}
-              />
+              <FormControl sx={{ width: "45%", mr: 2 }}>
+                <InputLabel id="demo-simple-select-label">
+                  Technology
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="technology"
+                  label="Technology"
+                  sx={{ textAlign: "left" }}
+                  value={interviewResultData.technology || ""}
+                  onChange={(e) => setDataHandler("technology", e.target.value)}
+                  error={!!error.technology}
+                  helperText={error.technology}
+                >
+                  <MenuItem value="React Js">React Js</MenuItem>
+                  <MenuItem value="Angular">Angular</MenuItem>
+                  <MenuItem value=".Net">.Net</MenuItem>
+                </Select>
+              </FormControl>
               <TextField
                 sx={{ width: "45%", mr: 2 }}
                 type="number"
                 name="experience"
-                vlaue={interviewResultData.experience}
+                value={interviewResultData.experience || ""}
                 onChange={(e) => setDataHandler("experience", e.target.value)}
                 label="Experience"
                 variant="outlined"
@@ -190,36 +212,52 @@ export default function HomePage() {
               />
             </Box>
             <Box sx={{ mb: 4, ml: 2 }}>
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="text"
-                name="round"
-                label="Round"
-                vlaue={interviewResultData.round}
-                onChange={(e) => setDataHandler("round", e.target.value)}
-                variant="outlined"
-                error={!!error.round}
-                helperText={error.round}
-              />
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                name="communication"
-                label="Communication"
-                vlaue={interviewResultData.communication}
-                onChange={(e) =>
-                  setDataHandler("communication", e.target.value)
-                }
-                variant="outlined"
-                error={!!error.communication}
-                helperText={error.communication}
-              />
+              <FormControl sx={{ width: "45%", mr: 2 }}>
+                <InputLabel id="demo-simple-select-label">Round</InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="round"
+                  label="Round"
+                  sx={{ textAlign: "left" }}
+                  value={interviewResultData.round || ""}
+                  onChange={(e) => setDataHandler("round", e.target.value)}
+                  error={!!error.round}
+                  helperText={error.round}
+                >
+                  <MenuItem value="Practical">Practical</MenuItem>
+                  <MenuItem value="Technical">Technical</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl sx={{ width: "45%", mr: 2 }}>
+                <InputLabel id="demo-simple-select-label">
+                  Communication
+                </InputLabel>
+                <Select
+                  labelId="demo-simple-select-label"
+                  id="demo-simple-select"
+                  name="communication"
+                  label="Communication"
+                  sx={{ textAlign: "left" }}
+                  value={interviewResultData.communication || ""}
+                  onChange={(e) =>
+                    setDataHandler("communication", e.target.value)
+                  }
+                  error={!!error.communication}
+                  helperText={error.communication}
+                >
+                  <MenuItem value="Good">Good</MenuItem>
+                  <MenuItem value="Medium">Medium</MenuItem>
+                  <MenuItem value="Low">Low</MenuItem>
+                </Select>
+              </FormControl>
             </Box>
             <Box sx={{ mb: 4, ml: 2 }}>
               <TextField
                 sx={{ width: "45%", mr: 2 }}
                 type="number"
                 name="practical"
-                vlaue={interviewResultData.practical}
+                value={interviewResultData.practical || ""}
                 onChange={(e) => setDataHandler("practical", e.target.value)}
                 label="Practical Completion"
                 variant="outlined"
@@ -230,7 +268,7 @@ export default function HomePage() {
                 sx={{ width: "45%", mr: 2 }}
                 type="number"
                 name="coding"
-                vlaue={interviewResultData.coding}
+                value={interviewResultData.coding || ""}
                 onChange={(e) => setDataHandler("coding", e.target.value)}
                 label="Coding Standerd"
                 variant="outlined"
@@ -243,7 +281,7 @@ export default function HomePage() {
                 sx={{ width: "45%", mr: 2 }}
                 type="text"
                 name="technical"
-                vlaue={interviewResultData.technical}
+                value={interviewResultData.technical || ""}
                 onChange={(e) => setDataHandler("technical", e.target.value)}
                 label="Technical Round"
                 variant="outlined"
@@ -254,7 +292,7 @@ export default function HomePage() {
                 sx={{ width: "45%", mr: 2 }}
                 type="text"
                 name="notes"
-                vlaue={interviewResultData.notes}
+                value={interviewResultData.notes || ""}
                 onChange={(e) => setDataHandler("notes", e.target.value)}
                 label="Notes"
                 variant="outlined"
@@ -265,14 +303,35 @@ export default function HomePage() {
             <Box
               sx={{
                 display: "flex",
+                justifyContent: "center",
+                alignItem: "center",
                 flexDirection: "row",
                 pt: 1,
                 mx: "1rem",
               }}
             >
+              <Box style={{ border: "1px" }} />
+
+              <Button
+                variant="outlined"
+                onClick={() => setShowTable(true)}
+                sx={{
+                  mr: 1,
+                  borderColor: "error.main",
+                  borderRadius: 2,
+                  color: "#e30909",
+                  "&.MuiButtonBase-root:hover": {
+                    borderColor: "error.main",
+                    bgcolor: "#e30909",
+                    color: "#fff",
+                  },
+                }}
+              >
+                Back
+              </Button>
               <Button
                 variant="contained"
-                sx={{ mr: 1 }}
+                sx={{ mr: 1, borderRadius: 2 }}
                 onClick={submitHandler}
                 disabled={
                   !interviewResultData.date ||
@@ -290,26 +349,9 @@ export default function HomePage() {
               >
                 Submit
               </Button>
-              <Box sx={{ flex: "1 1 auto" }} style={{ border: "1px" }} />
-
-              <Button
-                variant="outlined"
-                sx={{
-                  mr: 1,
-                  borderColor: "error.main",
-                  color: "#e30909",
-                  "&.MuiButtonBase-root:hover": {
-                    borderColor: "error.main",
-                    bgcolor: "#e30909",
-                    color: "#fff",
-                  },
-                }}
-              >
-                Clear
-              </Button>
             </Box>
           </Paper>
-        </React.Fragment>
+        </>
       )}
       <>{showTable && <ResultTable setShowTable={setShowTable} />}</>
     </>

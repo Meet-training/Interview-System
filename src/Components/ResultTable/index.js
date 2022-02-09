@@ -1,5 +1,7 @@
-import React from "react";
+import * as React from "react";
+import { styled } from "@mui/material/styles";
 import {
+  Typography,
   Table,
   TableBody,
   TableCell,
@@ -8,21 +10,51 @@ import {
   TableRow,
   Paper,
   Box,
-  Typography,
   Button,
 } from "@mui/material";
-import { useSelector } from "react-redux";
 
-const ResultTable = ({ setShowTable }) => {
+import { tableCellClasses } from "@mui/material/TableCell";
+
+import { useDispatch, useSelector } from "react-redux";
+
+import EditRoundedIcon from "@mui/icons-material/EditRounded";
+
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  "&:nth-of-type(odd)": {
+    backgroundColor: theme.palette.action.hover,
+  },
+
+  "&:last-child td, &:last-child th": {
+    border: 0,
+  },
+}));
+
+export default function ResultTable({ setShowTable }) {
+  const dispatch = useDispatch();
+
   const resultData = useSelector((state) => state.interviewResult);
 
+  const handleUpdateResult = (id) => {
+    dispatch({
+      type: "Set_Interview_Result",
+      payload: id,
+    });
+    setShowTable(false);
+  };
+
   return (
-    <React.Fragment>
+    <>
       <Typography
         variant="h6"
         sx={{ fontStyle: "italic", textDecoration: "underline" }}
       >
-        Interview Result Table
+        Interview Result List
       </Typography>
       <Box
         sx={{
@@ -36,86 +68,102 @@ const ResultTable = ({ setShowTable }) => {
       >
         <Button
           variant="outlined"
-          color="inherit"
+          color="success"
           onClick={() => setShowTable(false)}
           sx={{
             mr: 1,
+            borderRadius: 2,
             "&.MuiButtonBase-root:hover": {
-              borderColor: "error.main",
-              bgcolor: "#e30909",
+              borderColor: "mediumseagreen",
+              bgcolor: "mediumseagreen",
               color: "#fff",
             },
           }}
         >
-          Back
+          Add New Record
         </Button>
       </Box>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 600 }} aria-label="simple table">
+        <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead sx={{ bgcolor: "#1c9c51" }}>
             <TableRow>
-              <TableCell align="left" sx={{ color: "white" }}>
-                Date
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              <StyledTableCell sx={{ color: "white" }}>Date</StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Name
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Interviewer
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Technology
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Experience
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Round
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Communication
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Practical
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Coding
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Technical
-              </TableCell>
-              <TableCell align="left" sx={{ color: "white" }}>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
                 Notes
-              </TableCell>
+              </StyledTableCell>
+              <StyledTableCell sx={{ color: "white" }} align="center">
+                Action
+              </StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {console.log("resultData : ", resultData)}
-            {resultData.map((row) => (
-              <TableRow
-                key={row.id}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component="th" scope="row">
+            {console.log("ResultData : ", resultData)}
+            {resultData.map((row, id) => (
+              <StyledTableRow key={row.date}>
+                <StyledTableCell component="th" scope="row">
                   {row.date}
-                </TableCell>
-                <TableCell align="left">{row.name}</TableCell>
-                <TableCell align="left">{row.interviewer}</TableCell>
-                <TableCell align="left">{row.technology}</TableCell>
-                <TableCell align="left">{row.experience}</TableCell>
-                <TableCell align="left">{row.round}</TableCell>
-                <TableCell align="left">{row.communication}</TableCell>
-                <TableCell align="left">{row.practical}</TableCell>
-                <TableCell align="left">{row.coding}</TableCell>
-                <TableCell align="left">{row.technical}</TableCell>
-                <TableCell align="left">{row.notes}</TableCell>
-              </TableRow>
+                </StyledTableCell>
+                <StyledTableCell align="center">{row.name}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.interviewer}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.technology}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.experience}
+                </StyledTableCell>
+                <StyledTableCell align="center">{row.round}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.communication}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.practical}
+                </StyledTableCell>
+                <StyledTableCell align="center">{row.coding}</StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.technical}
+                </StyledTableCell>
+                <StyledTableCell sx={{ textAlign: "justify" }}>
+                  {row.notes}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  <Button onClick={() => handleUpdateResult(id)}>
+                    <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
+                  </Button>
+                </StyledTableCell>
+              </StyledTableRow>
             ))}
           </TableBody>
         </Table>
       </TableContainer>
-    </React.Fragment>
+    </>
   );
-};
-
-export default ResultTable;
+}
