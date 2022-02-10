@@ -18,6 +18,7 @@ import { tableCellClasses } from "@mui/material/TableCell";
 import { useDispatch, useSelector } from "react-redux";
 
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
+import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
@@ -35,24 +36,36 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-export default function ResultTable({ setShowTable }) {
+export default function ResultTable({ showInterviewForm }) {
   const dispatch = useDispatch();
 
   const resultData = useSelector((state) => state.interviewResult);
 
-  const handleUpdateResult = (id) => {
+  const newAddRecordHandler = () => {
+    showInterviewForm();
+  };
+
+  const handleResult = (values) => {
+    debugger;
     dispatch({
-      type: "Set_Interview_Result",
+      type: "Update_Interview_Result",
+      payload: values,
+    });
+    showInterviewForm(values);
+  };
+
+  const removeHandler = (id) => {
+    dispatch({
+      type: "Remove_Interview_Result",
       payload: id,
     });
-    setShowTable(false);
   };
 
   return (
     <>
       <Typography
         variant="h6"
-        sx={{ fontStyle: "italic", textDecoration: "underline" }}
+        sx={{ fontStyle: "italic", textDecoration: "underline", mt: 5 }}
       >
         Interview Result List
       </Typography>
@@ -69,7 +82,7 @@ export default function ResultTable({ setShowTable }) {
         <Button
           variant="outlined"
           color="success"
-          onClick={() => setShowTable(false)}
+          onClick={newAddRecordHandler}
           sx={{
             mr: 1,
             borderRadius: 2,
@@ -124,43 +137,46 @@ export default function ResultTable({ setShowTable }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {console.log("ResultData : ", resultData)}
-            {resultData.map((row, id) => (
-              <StyledTableRow key={row.date}>
-                <StyledTableCell component="th" scope="row">
-                  {row.date}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.name}</StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.interviewer}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.technology}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.experience}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.round}</StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.communication}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.practical}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.coding}</StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.technical}
-                </StyledTableCell>
-                <StyledTableCell sx={{ textAlign: "justify" }}>
-                  {row.notes}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  <Button onClick={() => handleUpdateResult(id)}>
-                    <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
-                  </Button>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
+            {resultData &&
+              resultData.map((row, id) => (
+                <StyledTableRow key={`${row.id}`}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.date}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.name}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.interviewer}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.technology}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.experience}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.round}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.communication}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.practical}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.coding}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.technical}
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ textAlign: "justify" }}>
+                    {row.notes}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    <Button onClick={() => handleResult(row, id)}>
+                      <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
+                    </Button>
+                    <Button onClick={() => removeHandler(row.id)}>
+                      <DeleteOutlineTwoToneIcon sx={{ color: "red" }} />
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

@@ -1,320 +1,368 @@
-import React, { useState } from "react";
+import React from "react";
+
+import { Formik, ErrorMessage } from "formik";
 import {
-  Box,
-  Paper,
+  FormControl,
+  InputLabel,
+  Typography,
+  MenuItem,
+  Grid,
+  Select,
   TextField,
   Button,
-  Typography,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
+  Paper,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  validateDate,
-  validateName,
-  validateInterviewer,
-  validateTechnology,
-  validateExperience,
-  validateRound,
-  validateCommunication,
-  validatePractical,
-  validateCoding,
-  validateTechnical,
-  validateNotes,
-} from "../Validation";
-import ResultTable from "../ResultTable";
 
-function getCurrentResult(state) {
-  return state.interviewResult.find((t) => t.id === state.current_result) || {};
-}
+import schema from "../Validation/schema";
+import { useDispatch } from "react-redux";
 
-export default function HomePage() {
+const initialValue = {
+  date: "",
+  name: "",
+  interviewer: "",
+  technology: "",
+  experience: "",
+  round: "",
+  communication: "",
+  practical: "",
+  coding: "",
+  technical: "",
+  notes: "",
+};
+
+export default function HomePage({ showResultTable }) {
   const dispatch = useDispatch();
 
-  const curResult = useSelector(getCurrentResult);
-
-  const [practicalRound, setPracticalRound] = useState(false);
-
-  const [interviewResultData, setInterviewResultData] = useState(curResult);
-
-  const [showTable, setShowTable] = useState(false);
-
-  const [error, setError] = useState({
-    date: null,
-    name: null,
-    interviewer: null,
-    technology: null,
-    experience: null,
-    round: null,
-    communication: null,
-    practical: null,
-    coding: null,
-    technical: null,
-    notes: null,
-  });
-
-  const setDataHandler = (name, value) => {
-    let curState = { ...interviewResultData };
-    curState[name] = value;
-    setInterviewResultData(curState);
-    console.log("dropdownvalue", value);
-    switch (name) {
-      case "date":
-        setError({ date: validateDate(value) });
-        break;
-      case "name":
-        setError({ name: validateName(value) });
-        break;
-      case "interviewer":
-        setError({ interviewer: validateInterviewer(value) });
-        break;
-      case "technology":
-        setError({ technology: validateTechnology(value) });
-        break;
-      case "experience":
-        setError({ experience: validateExperience(value) });
-        break;
-      case "round":
-        setError({ round: validateRound(value) });
-        break;
-      case "communication":
-        setError({ communication: validateCommunication(value) });
-        break;
-      case "practical":
-        setError({ practical: validatePractical(value) });
-        break;
-      case "coding":
-        setError({ coding: validateCoding(value) });
-        break;
-      case "technical":
-        setError({ technical: validateTechnical(value) });
-        break;
-      case "notes":
-        setError({ notes: validateNotes(value) });
-        break;
-      default:
-    }
-  };
-
-  const submitHandler = () => {
-    if (interviewResultData.id === undefined) {
-      dispatch({
-        type: "Add_Interview_Result",
-        payload: interviewResultData,
-      });
-    } else {
-      dispatch({
-        type: "Update_Interview_Result",
-        payload: interviewResultData,
-      });
-    }
-    setShowTable(true);
-    setInterviewResultData({});
+  const showTableHandler = () => {
+    showResultTable();
   };
 
   return (
-    <>
-      {!showTable && (
-        <>
-          <Paper elevation={4} sx={{ p: 4 }}>
-            <Typography
-              variant="h5"
-              sx={{ textDecoration: "underline", mb: 4 }}
-            >
-              Add Interview Result
-            </Typography>
-            <Box sx={{ mb: 4 }}>
+    <Paper
+      elevation={4}
+      sx={{
+        p: 4,
+        display: "flex",
+        flexDirection: "column",
+        textAlign: "center",
+        mt: 6,
+        mb: 4,
+        mx: 15,
+      }}
+    >
+      <Typography variant="h5" sx={{ mb: 3 }}>
+        Interview Result Form
+      </Typography>
+
+      <Formik
+        initialValues={{
+          ...initialValue,
+        }}
+        validationSchema={schema}
+        onSubmit={(values) => {
+          if (values.id === undefined) {
+            dispatch({
+              type: "Add_Interview_Result",
+              payload: values,
+            });
+            showResultTable();
+          }
+        }}
+      >
+        {({
+          errors,
+          handleBlur,
+          handleChange,
+          handleSubmit,
+
+          isValid,
+
+          touched,
+          values,
+        }) => (
+          <form
+            autoComplete="off"
+            method="POST"
+            noValidate
+            onSubmit={handleSubmit}
+          >
+            <Grid sx={{ mb: 4 }}>
               <TextField
-                sx={{ width: "90%" }}
+                sx={{ width: "100%" }}
                 type="date"
                 name="date"
                 label="Date"
-                value={interviewResultData.date || ""}
-                onChange={(e) => setDataHandler("date", e.target.value)}
+                value={values.date}
+                onBlur={handleBlur}
+                onChange={handleChange}
+                error={Boolean(touched.date && errors.date)}
                 variant="outlined"
-                error={!!error.date}
-                helperText={error.date}
                 InputLabelProps={{
                   shrink: true,
                 }}
+                required
               />
-            </Box>
-            <Box sx={{ mb: 4, ml: 2 }}>
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="text"
-                name="name"
-                label="Name"
-                value={interviewResultData.name || ""}
-                onChange={(e) => setDataHandler("name", e.target.value)}
-                variant="outlined"
-                error={!!error.name}
-                helperText={error.name}
+              <ErrorMessage
+                component="div"
+                name="date"
+                className="invalid-feedback"
               />
-              <FormControl sx={{ width: "45%", mr: 2 }}>
-                <InputLabel id="demo-simple-select-label">
-                  Interviewer
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+            </Grid>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  sx={{ width: "100%", mr: 2 }}
+                  type="text"
+                  name="name"
+                  label="Name"
+                  value={values.name}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  variant="outlined"
+                  error={Boolean(touched.name && errors.name)}
+                  required
+                />
+                <ErrorMessage
+                  component="div"
+                  name="name"
+                  className="invalid-feedback"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormControl sx={{ width: "100%", mr: 2 }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Interviewer
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="interviewer"
+                    label="Interviewer"
+                    onBlur={handleBlur}
+                    sx={{ textAlign: "left" }}
+                    value={values.interviewer}
+                    onChange={handleChange}
+                    error={Boolean(touched.interviewer && errors.interviewer)}
+                    fullWidth
+                    required
+                  >
+                    <MenuItem value="Renish">Renish</MenuItem>
+                    <MenuItem value="Dhaval">Dhaval</MenuItem>
+                    <MenuItem value="Riddhi">Riddhi</MenuItem>
+                    <MenuItem value="Malay">Malay</MenuItem>
+                    <MenuItem value="Nirmal">Nirmal</MenuItem>
+                  </Select>
+                </FormControl>
+                <ErrorMessage
+                  component="div"
                   name="interviewer"
-                  label="Interviewer"
-                  sx={{ textAlign: "left" }}
-                  value={interviewResultData.interviewer || ""}
-                  onChange={(e) =>
-                    setDataHandler("interviewer", e.target.value)
-                  }
-                  error={!!error.interviewer}
-                  helperText={error.interviewer}
-                >
-                  <MenuItem value="Renish">Renish</MenuItem>
-                  <MenuItem value="Dhaval">Dhaval</MenuItem>
-                  <MenuItem value="Riddhi">Riddhi</MenuItem>
-                  <MenuItem value="Malay">Malay</MenuItem>
-                  <MenuItem value="Nirmal">Nirmal</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ mb: 4, ml: 2 }}>
-              <FormControl sx={{ width: "45%", mr: 2 }}>
-                <InputLabel id="demo-simple-select-label">
-                  Technology
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+                  className="invalid-feedback"
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item md={6} xs={12}>
+                <FormControl sx={{ width: "100%", mr: 2 }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Technology
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="technology"
+                    label="Technology"
+                    onBlur={handleBlur}
+                    sx={{ textAlign: "left" }}
+                    value={values.technology}
+                    onChange={handleChange}
+                    error={Boolean(touched.technology && errors.technology)}
+                    fullWidth
+                    required
+                  >
+                    <MenuItem value="ReactJs">ReactJs</MenuItem>
+                    <MenuItem value="Angular">Angular</MenuItem>
+                    <MenuItem value=".Net">.Net</MenuItem>
+                  </Select>
+                </FormControl>
+                <ErrorMessage
+                  component="div"
                   name="technology"
-                  label="Technology"
-                  sx={{ textAlign: "left" }}
-                  value={interviewResultData.technology || ""}
-                  onChange={(e) => setDataHandler("technology", e.target.value)}
-                  error={!!error.technology}
-                  helperText={error.technology}
-                >
-                  <MenuItem value="React Js">React Js</MenuItem>
-                  <MenuItem value="Angular">Angular</MenuItem>
-                  <MenuItem value=".Net">.Net</MenuItem>
-                </Select>
-              </FormControl>
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="number"
-                name="experience"
-                value={interviewResultData.experience || ""}
-                onChange={(e) => setDataHandler("experience", e.target.value)}
-                label="Experience"
-                variant="outlined"
-                error={!!error.experience}
-                helperText={error.experience}
-              />
-            </Box>
-            <Box sx={{ mb: 4, ml: 2 }}>
-              <FormControl sx={{ width: "45%", mr: 2 }}>
-                <InputLabel id="demo-simple-select-label">Round</InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+                  className="invalid-feedback"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  sx={{ width: "100%", mr: 2 }}
+                  type="text"
+                  name="experience"
+                  label="Experience"
+                  onBlur={handleBlur}
+                  value={values.experience}
+                  onChange={handleChange}
+                  variant="outlined"
+                  error={Boolean(touched.experience && errors.experience)}
+                  required
+                  fullWidth
+                />
+                <ErrorMessage
+                  component="div"
+                  name="experience"
+                  className="invalid-feedback"
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item md={6} xs={12}>
+                <FormControl sx={{ width: "100%", mr: 2 }}>
+                  <InputLabel id="demo-simple-select-label">Round</InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="round"
+                    label="Round"
+                    onBlur={handleBlur}
+                    sx={{ textAlign: "left" }}
+                    value={values.round}
+                    onChange={handleChange}
+                    error={Boolean(touched.round && errors.round)}
+                    fullWidth
+                    required
+                  >
+                    <MenuItem value="Practical">Practical</MenuItem>
+                    <MenuItem value="Technical">Technical</MenuItem>
+                  </Select>
+                </FormControl>
+                <ErrorMessage
+                  component="div"
                   name="round"
-                  label="Round"
-                  sx={{ textAlign: "left" }}
-                  value={interviewResultData.round || ""}
-                  onChange={(e) => setDataHandler("round", e.target.value)}
-                  error={!!error.round}
-                  helperText={error.round}
-                >
-                  <MenuItem value="Practical">Practical</MenuItem>
-                  <MenuItem value="Technical">Technical</MenuItem>
-                </Select>
-              </FormControl>
-              <FormControl sx={{ width: "45%", mr: 2 }}>
-                <InputLabel id="demo-simple-select-label">
-                  Communication
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-label"
-                  id="demo-simple-select"
+                  className="invalid-feedback"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <FormControl sx={{ width: "100%", mr: 2 }}>
+                  <InputLabel id="demo-simple-select-label">
+                    Communication
+                  </InputLabel>
+                  <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    name="communication"
+                    label="Communication"
+                    onBlur={handleBlur}
+                    sx={{ textAlign: "left" }}
+                    value={values.communication}
+                    onChange={handleChange}
+                    error={Boolean(
+                      touched.communication && errors.communication
+                    )}
+                    fullWidth
+                    required
+                  >
+                    <MenuItem value="Good">Good</MenuItem>
+                    <MenuItem value="Medium">Medium</MenuItem>
+                    <MenuItem value="Low">Low</MenuItem>
+                  </Select>
+                </FormControl>
+                <ErrorMessage
+                  component="div"
                   name="communication"
-                  label="Communication"
-                  sx={{ textAlign: "left" }}
-                  value={interviewResultData.communication || ""}
-                  onChange={(e) =>
-                    setDataHandler("communication", e.target.value)
-                  }
-                  error={!!error.communication}
-                  helperText={error.communication}
-                >
-                  <MenuItem value="Good">Good</MenuItem>
-                  <MenuItem value="Medium">Medium</MenuItem>
-                  <MenuItem value="Low">Low</MenuItem>
-                </Select>
-              </FormControl>
-            </Box>
-            <Box sx={{ mb: 4, ml: 2 }}>
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="number"
-                name="practical"
-                value={interviewResultData.practical || ""}
-                onChange={(e) => setDataHandler("practical", e.target.value)}
-                label="Practical Completion"
-                variant="outlined"
-                error={!!error.practical}
-                helperText={error.practical}
-              />
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="number"
-                name="coding"
-                value={interviewResultData.coding || ""}
-                onChange={(e) => setDataHandler("coding", e.target.value)}
-                label="Coding Standerd"
-                variant="outlined"
-                error={!!error.coding}
-                helperText={error.coding}
-              />
-            </Box>
-            <Box sx={{ mb: 4, ml: 2 }}>
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="text"
-                name="technical"
-                value={interviewResultData.technical || ""}
-                onChange={(e) => setDataHandler("technical", e.target.value)}
-                label="Technical Round"
-                variant="outlined"
-                error={!!error.technical}
-                helperText={error.technical}
-              />
-              <TextField
-                sx={{ width: "45%", mr: 2 }}
-                type="text"
-                name="notes"
-                value={interviewResultData.notes || ""}
-                onChange={(e) => setDataHandler("notes", e.target.value)}
-                label="Notes"
-                variant="outlined"
-                error={!!error.notes}
-                helperText={error.notes}
-              />
-            </Box>
-            <Box
+                  className="invalid-feedback"
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2} sx={{ mb: 3 }}>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  sx={{ width: "100%", mr: 2 }}
+                  type="text"
+                  name="practical"
+                  label="Practical Completion"
+                  value={values.practical}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  variant="outlined"
+                  error={Boolean(touched.practical && errors.practical)}
+                  required
+                />
+                <ErrorMessage
+                  component="div"
+                  name="practical"
+                  className="invalid-feedback"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  sx={{ width: "100%", mr: 2 }}
+                  type="text"
+                  name="coding"
+                  label="Coding"
+                  value={values.coding}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  variant="outlined"
+                  error={Boolean(touched.coding && errors.coding)}
+                  required
+                />
+                <ErrorMessage
+                  component="div"
+                  name="coding"
+                  className="invalid-feedback"
+                />
+              </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  sx={{ width: "100%", mr: 2 }}
+                  type="text"
+                  name="technical"
+                  label="Technical Completion"
+                  value={values.technical}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  variant="outlined"
+                  error={Boolean(touched.technical && errors.technical)}
+                  required
+                />
+                <ErrorMessage
+                  component="div"
+                  name="technical"
+                  className="invalid-feedback"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  sx={{ width: "100%", mr: 2 }}
+                  type="text"
+                  name="notes"
+                  label="Notes"
+                  value={values.notes}
+                  onBlur={handleBlur}
+                  onChange={handleChange}
+                  variant="outlined"
+                  error={Boolean(touched.notes && errors.notes)}
+                  required
+                />
+                <ErrorMessage
+                  component="div"
+                  name="notes"
+                  className="invalid-feedback"
+                />
+              </Grid>
+            </Grid>
+            <Grid
               sx={{
                 display: "flex",
                 justifyContent: "center",
                 alignItem: "center",
                 flexDirection: "row",
-                pt: 1,
+                pt: 3,
                 mx: "1rem",
               }}
             >
-              <Box style={{ border: "1px" }} />
-
               <Button
                 variant="outlined"
-                onClick={() => setShowTable(true)}
+                onClick={showTableHandler}
                 sx={{
                   mr: 1,
                   borderColor: "error.main",
@@ -330,30 +378,18 @@ export default function HomePage() {
                 Back
               </Button>
               <Button
+                sx={{ borderRadius: 2 }}
+                color="primary"
+                disabled={Boolean(!isValid)}
+                type="submit"
                 variant="contained"
-                sx={{ mr: 1, borderRadius: 2 }}
-                onClick={submitHandler}
-                disabled={
-                  !interviewResultData.date ||
-                  !interviewResultData.name ||
-                  !interviewResultData.interviewer ||
-                  !interviewResultData.technology ||
-                  !interviewResultData.experience ||
-                  !interviewResultData.round ||
-                  !interviewResultData.communication ||
-                  !interviewResultData.practical ||
-                  !interviewResultData.coding ||
-                  !interviewResultData.technical ||
-                  !interviewResultData.notes
-                }
               >
                 Submit
               </Button>
-            </Box>
-          </Paper>
-        </>
-      )}
-      <>{showTable && <ResultTable setShowTable={setShowTable} />}</>
-    </>
+            </Grid>
+          </form>
+        )}
+      </Formik>
+    </Paper>
   );
 }

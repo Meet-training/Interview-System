@@ -2,44 +2,38 @@ import produce from "immer";
 
 const initialState = {
   interviewResult: [],
-  current_result: -1,
 };
-
-function getNextId(state) {
-  let id = 0;
-  if (state.interviewResult.length > 0) {
-    id = state.interviewResult[state.interviewResult.length - 1].id;
-  }
-  id++;
-  return id;
-}
 
 const InterviewResultReducer = (state = initialState, action) => {
   switch (action.type) {
     case "Add_Interview_Result": {
-      let curState = { ...state };
+      const newState = produce(state, (draftState) => {
+        draftState.interviewResult.push(action.payload);
+      });
 
-      action.payload.id = getNextId(state);
-      curState.interviewResult = [...state.interviewResult, action.payload];
-
-      return curState;
+      return newState;
     }
 
-    case "set_Interview_Result": {
-      let curState = { ...state };
-
-      if (action.payload >= 0) curState.current_result = action.payload;
-      return curState;
+    case "Remove_Interview_Result": {
+      const newState = produce(state, (draftState) => {
+        const resultIndex = draftState.interviewResult.findIndex(
+          (item) => item.id === action.payload
+        );
+        draftState.interviewResult.splice(resultIndex, 1);
+      });
+      return newState;
     }
 
     case "Update_Interview_Result": {
-      let curState = { ...state };
+      const newState = produce(state, (draftState) => {
+        let index = draftState.interviewResult.findIndex(
+          (item) => item.id === action.payload.id
+        );
 
-      const index = curState.users.findIndex(
-        (item) => item.id === action.payload.id
-      );
-      curState.interviewResult[index] = action.payload;
-      return curState;
+        if (index > 0) index = 0;
+        draftState.interviewResult[index] = draftState.selectedResult;
+      });
+      return newState;
     }
     default:
       return state;

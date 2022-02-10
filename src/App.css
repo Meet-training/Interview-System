@@ -7,10 +7,19 @@
   pointer-events: none;
 }
 
-.paper {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+.invalid-feedback {
+  color: rgb(236, 6, 6);
+  float: left;
+}
+
+@media only screen and (max-width: 660px) {
+  .paper {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    text-align: center;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
