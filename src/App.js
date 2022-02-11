@@ -5,15 +5,25 @@ import NavBar from "./Components/Navbar";
 import HomePage from "./Components/Home";
 import ResultTable from "./Components/ResultTable";
 
-export default function App() {
-  const [show, setShow] = useState(false);
+const App = () => {
+  const [showComponents, setShowComponents] = useState(false);
+
+  const [selectedResultField, setSelectedResultField] = useState({});
 
   const showFormHandler = () => {
-    setShow(true);
+    setShowComponents(true);
   };
 
   const showTableHandler = () => {
-    setShow(false);
+    setShowComponents(false);
+  };
+
+  const getResultHandler = (values) => {
+    setSelectedResultField(values);
+  };
+
+  const handleUpdateField = () => {
+    setSelectedResultField({});
   };
 
   return (
@@ -23,12 +33,21 @@ export default function App() {
           <NavBar />
         </Box>
 
-        {show ? (
-          <HomePage showResultTable={showTableHandler} />
+        {showComponents ? (
+          <HomePage
+            showResultTable={showTableHandler}
+            selectedResultField={selectedResultField}
+            updateField={handleUpdateField}
+          />
         ) : (
-          <ResultTable showInterviewForm={showFormHandler} />
+          <ResultTable
+            showInterviewForm={showFormHandler}
+            getData={getResultHandler}
+          />
         )}
       </div>
     </React.Fragment>
   );
-}
+};
+
+export default App;

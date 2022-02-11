@@ -1,7 +1,7 @@
 import * as React from "react";
 import { AppBar, Box, Toolbar, Typography } from "@mui/material";
 
-export default function NavBar() {
+const NavBar = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static" sx={{ bgcolor: "#2E3B55" }}>
@@ -18,4 +18,6 @@ export default function NavBar() {
       </AppBar>
     </Box>
   );
-}
+};
+
+export default NavBar;

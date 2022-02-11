@@ -8,6 +8,7 @@ const InterviewResultReducer = (state = initialState, action) => {
   switch (action.type) {
     case "Add_Interview_Result": {
       const newState = produce(state, (draftState) => {
+        action.payload.id = Math.random().toString();
         draftState.interviewResult.push(action.payload);
       });
 
@@ -30,8 +31,7 @@ const InterviewResultReducer = (state = initialState, action) => {
           (item) => item.id === action.payload.id
         );
 
-        if (index > 0) index = 0;
-        draftState.interviewResult[index] = draftState.selectedResult;
+        draftState.interviewResult[index] = action.payload;
       });
       return newState;
     }

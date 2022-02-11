@@ -1,6 +1,9 @@
 import React from "react";
 
+import { useSelector, useDispatch } from "react-redux";
+
 import { Formik, ErrorMessage } from "formik";
+
 import {
   FormControl,
   InputLabel,
@@ -14,23 +17,24 @@ import {
 } from "@mui/material";
 
 import schema from "../Validation/schema";
-import { useDispatch } from "react-redux";
 
-const initialValue = {
-  date: "",
-  name: "",
-  interviewer: "",
-  technology: "",
-  experience: "",
-  round: "",
-  communication: "",
-  practical: "",
-  coding: "",
-  technical: "",
-  notes: "",
-};
+const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
+  const initialValue = {
+    date: selectedResultField.date || "",
+    name: selectedResultField.name || "",
+    interviewer: selectedResultField.interviewer || "",
+    technology: selectedResultField.technology || "",
+    experience: selectedResultField.experience || "",
+    round: selectedResultField.round || "",
+    communication: selectedResultField.communication || "",
+    practical: selectedResultField.practical || "",
+    coding: selectedResultField.coding || "",
+    technical: selectedResultField.technical || "",
+    notes: selectedResultField.notes || "",
+    id: selectedResultField.id || "",
+  };
+  const resultData = useSelector((state) => state.interviewResult);
 
-export default function HomePage({ showResultTable }) {
   const dispatch = useDispatch();
 
   const showTableHandler = () => {
@@ -60,13 +64,23 @@ export default function HomePage({ showResultTable }) {
         }}
         validationSchema={schema}
         onSubmit={(values) => {
-          if (values.id === undefined) {
+          let findResult = resultData.find(
+            (result) => result.id === selectedResultField.id
+          );
+
+          if (findResult) {
+            dispatch({
+              type: "Update_Interview_Result",
+              payload: values,
+            });
+            updateField();
+          } else {
             dispatch({
               type: "Add_Interview_Result",
               payload: values,
             });
-            showResultTable();
           }
+          showResultTable();
         }}
       >
         {({
@@ -81,7 +95,7 @@ export default function HomePage({ showResultTable }) {
           values,
         }) => (
           <form
-            autoComplete="off"
+            autoComplete="on"
             method="POST"
             noValidate
             onSubmit={handleSubmit}
@@ -140,7 +154,11 @@ export default function HomePage({ showResultTable }) {
                     label="Interviewer"
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
-                    value={values.interviewer}
+                    value={
+                      values.interviewer ||
+                      selectedResultField.interviewer ||
+                      ""
+                    }
                     onChange={handleChange}
                     error={Boolean(touched.interviewer && errors.interviewer)}
                     fullWidth
@@ -295,7 +313,7 @@ export default function HomePage({ showResultTable }) {
                   sx={{ width: "100%", mr: 2 }}
                   type="text"
                   name="coding"
-                  label="Coding"
+                  label="Coding Standard"
                   value={values.coding}
                   onBlur={handleBlur}
                   onChange={handleChange}
@@ -392,4 +410,6 @@ export default function HomePage({ showResultTable }) {
       </Formik>
     </Paper>
   );
-}
+};
+
+export default HomePage;
