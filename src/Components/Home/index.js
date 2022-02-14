@@ -15,25 +15,30 @@ import {
   Button,
   Paper,
 } from "@mui/material";
+import { addResult, updateResult } from "../../Store/actions";
 
 import schema from "../Validation/schema";
 
 const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
   const initialValue = {
-    date: selectedResultField.date || "",
-    name: selectedResultField.name || "",
-    interviewer: selectedResultField.interviewer || "",
-    technology: selectedResultField.technology || "",
-    experience: selectedResultField.experience || "",
-    round: selectedResultField.round || "",
-    communication: selectedResultField.communication || "",
-    practical: selectedResultField.practical || "",
-    coding: selectedResultField.coding || "",
-    technical: selectedResultField.technical || "",
-    notes: selectedResultField.notes || "",
+    date: selectedResultField.date,
+    name: selectedResultField.name,
+    interviewer: selectedResultField.interviewer,
+    technology: selectedResultField.technology,
+    experience: selectedResultField.experience,
+    round: selectedResultField.round,
+    communication: selectedResultField.communication,
+    practical: selectedResultField.practical,
+    coding: selectedResultField.coding,
+    technical: selectedResultField.technical,
+    notes: selectedResultField.notes,
     id: selectedResultField.id || "",
   };
   const resultData = useSelector((state) => state.interviewResult);
+
+  let findResult = resultData.find(
+    (result) => result.id === selectedResultField.id
+  );
 
   const dispatch = useDispatch();
 
@@ -64,21 +69,11 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
         }}
         validationSchema={schema}
         onSubmit={(values) => {
-          let findResult = resultData.find(
-            (result) => result.id === selectedResultField.id
-          );
-
           if (findResult) {
-            dispatch({
-              type: "Update_Interview_Result",
-              payload: values,
-            });
+            dispatch(updateResult(values));
             updateField();
           } else {
-            dispatch({
-              type: "Add_Interview_Result",
-              payload: values,
-            });
+            dispatch(addResult(values));
           }
           showResultTable();
         }}
@@ -100,13 +95,13 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
             noValidate
             onSubmit={handleSubmit}
           >
-            <Grid sx={{ mb: 4 }}>
+            <Grid sx={{ mb: 2 }}>
               <TextField
                 sx={{ width: "100%" }}
                 type="date"
                 name="date"
-                label="Date"
-                value={values.date}
+                label="Date Of Interview"
+                value={values.date || ""}
                 onBlur={handleBlur}
                 onChange={handleChange}
                 error={Boolean(touched.date && errors.date)}
@@ -122,14 +117,14 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                 className="invalid-feedback"
               />
             </Grid>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item md={6} xs={12}>
                 <TextField
                   sx={{ width: "100%", mr: 2 }}
                   type="text"
                   name="name"
-                  label="Name"
-                  value={values.name}
+                  label="Candidate Name"
+                  value={values.name || ""}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -147,19 +142,21 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   <InputLabel id="demo-simple-select-label">
                     Interviewer
                   </InputLabel>
+                  {/* <MultipleSelectChip
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.interviewer}
+                  /> */}
+
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     name="interviewer"
                     label="Interviewer"
+                    value={values.interviewer || ""}
+                    onChange={handleChange}
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
-                    value={
-                      values.interviewer ||
-                      selectedResultField.interviewer ||
-                      ""
-                    }
-                    onChange={handleChange}
                     error={Boolean(touched.interviewer && errors.interviewer)}
                     fullWidth
                     required
@@ -178,7 +175,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                 />
               </Grid>
             </Grid>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item md={6} xs={12}>
                 <FormControl sx={{ width: "100%", mr: 2 }}>
                   <InputLabel id="demo-simple-select-label">
@@ -191,7 +188,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     label="Technology"
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
-                    value={values.technology}
+                    value={values.technology || ""}
                     onChange={handleChange}
                     error={Boolean(touched.technology && errors.technology)}
                     fullWidth
@@ -215,7 +212,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   name="experience"
                   label="Experience"
                   onBlur={handleBlur}
-                  value={values.experience}
+                  value={values.experience || ""}
                   onChange={handleChange}
                   variant="outlined"
                   error={Boolean(touched.experience && errors.experience)}
@@ -229,7 +226,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                 />
               </Grid>
             </Grid>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item md={6} xs={12}>
                 <FormControl sx={{ width: "100%", mr: 2 }}>
                   <InputLabel id="demo-simple-select-label">Round</InputLabel>
@@ -240,7 +237,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     label="Round"
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
-                    value={values.round}
+                    value={values.round || ""}
                     onChange={handleChange}
                     error={Boolean(touched.round && errors.round)}
                     fullWidth
@@ -268,7 +265,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     label="Communication"
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
-                    value={values.communication}
+                    value={values.communication || ""}
                     onChange={handleChange}
                     error={Boolean(
                       touched.communication && errors.communication
@@ -278,7 +275,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   >
                     <MenuItem value="Good">Good</MenuItem>
                     <MenuItem value="Medium">Medium</MenuItem>
-                    <MenuItem value="Low">Low</MenuItem>
+                    <MenuItem value="Low">Poor</MenuItem>
                   </Select>
                 </FormControl>
                 <ErrorMessage
@@ -288,14 +285,14 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                 />
               </Grid>
             </Grid>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
+            <Grid container spacing={2} sx={{ mb: 2 }}>
               <Grid item md={6} xs={12}>
                 <TextField
                   sx={{ width: "100%", mr: 2 }}
                   type="text"
                   name="practical"
-                  label="Practical Completion"
-                  value={values.practical}
+                  label="Practical Completion (0-100)%"
+                  value={values.practical || ""}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -313,8 +310,8 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   sx={{ width: "100%", mr: 2 }}
                   type="text"
                   name="coding"
-                  label="Coding Standard"
-                  value={values.coding}
+                  label="Coding Standard (0-100)%"
+                  value={values.coding || ""}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -334,8 +331,8 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   sx={{ width: "100%", mr: 2 }}
                   type="text"
                   name="technical"
-                  label="Technical Completion"
-                  value={values.technical}
+                  label="Technical Completion (0-100)%"
+                  value={values.technical || ""}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -354,7 +351,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   type="text"
                   name="notes"
                   label="Notes"
-                  value={values.notes}
+                  value={values.notes || ""}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"

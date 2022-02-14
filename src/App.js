@@ -42,7 +42,7 @@ const App = () => {
         ) : (
           <ResultTable
             showInterviewForm={showFormHandler}
-            getData={getResultHandler}
+            getResult={getResultHandler}
           />
         )}
       </div>

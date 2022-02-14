@@ -1,4 +1,9 @@
 import produce from "immer";
+import {
+  Add_Interview_Result,
+  Update_Interview_Result,
+  Remove_Interview_Result,
+} from "./actionType";
 
 const initialState = {
   interviewResult: [],
@@ -6,7 +11,7 @@ const initialState = {
 
 const InterviewResultReducer = (state = initialState, action) => {
   switch (action.type) {
-    case "Add_Interview_Result": {
+    case Add_Interview_Result: {
       const newState = produce(state, (draftState) => {
         action.payload.id = Math.random().toString();
         draftState.interviewResult.push(action.payload);
@@ -15,7 +20,7 @@ const InterviewResultReducer = (state = initialState, action) => {
       return newState;
     }
 
-    case "Remove_Interview_Result": {
+    case Remove_Interview_Result: {
       const newState = produce(state, (draftState) => {
         const resultIndex = draftState.interviewResult.findIndex(
           (item) => item.id === action.payload
@@ -25,7 +30,7 @@ const InterviewResultReducer = (state = initialState, action) => {
       return newState;
     }
 
-    case "Update_Interview_Result": {
+    case Update_Interview_Result: {
       const newState = produce(state, (draftState) => {
         let index = draftState.interviewResult.findIndex(
           (item) => item.id === action.payload.id

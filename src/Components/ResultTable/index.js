@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import {
   Typography,
@@ -9,7 +9,7 @@ import {
   TableHead,
   TableRow,
   Paper,
-  Box,
+  TextField,
   Button,
 } from "@mui/material";
 
@@ -19,6 +19,9 @@ import { useDispatch, useSelector } from "react-redux";
 
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
 import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
+import { Box } from "@mui/system";
+import { removeResult } from "../../Store/actions";
+import AddIcon from "@mui/icons-material/Add";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
@@ -36,52 +39,65 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const ResultTable = ({ showInterviewForm, getData }) => {
+const ResultTable = ({ showInterviewForm, getResult }) => {
   const dispatch = useDispatch();
 
   const resultData = useSelector((state) => state.interviewResult);
+  const [rows, setRows] = useState(resultData);
+  const [searchValue, setSearchValue] = useState("");
+
+  const requestSerch = () => {
+    const filteredRows = resultData.filter((item) => {
+      return (
+        item.date.toLowerCase().indexOf(searchValue) !== -1 ||
+        item.technology.toLowerCase().indexOf(searchValue) !== -1
+      );
+    });
+    setRows(filteredRows);
+  };
 
   const newAddRecordHandler = () => {
     showInterviewForm();
   };
 
   const handleUpdateResult = (values) => {
-    getData(values);
+    getResult(values);
     showInterviewForm();
   };
 
   const removeHandler = (id) => {
-    dispatch({
-      type: "Remove_Interview_Result",
-      payload: id,
-    });
+    dispatch(removeResult(id));
   };
 
   return (
-    <>
+    <div>
       <Typography
         variant="h6"
         sx={{ fontStyle: "italic", textDecoration: "underline", mt: 5 }}
       >
         Interview Result List
       </Typography>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "end",
-          mb: 2,
-          pt: 1,
-          mx: "1rem",
-        }}
-      >
+      <Box sx={{ display: "flex", flexDirection: "row" }}>
+        <TextField
+          sx={{ ml: 5, my: 2, width: "350px" }}
+          id="search"
+          label="Search By Date And Technology"
+          variant="outlined"
+          value={searchValue}
+          onChange={(e) => setSearchValue(e.target.value)}
+        />
+        <Box sx={{ flex: "1 1 auto" }} />
         <Button
+          align="right"
           variant="outlined"
           color="success"
           onClick={newAddRecordHandler}
           sx={{
-            mr: 1,
-            borderRadius: 2,
+            mr: 5,
+            my: 2,
+            fontWeight: 600,
+            py: 1,
+
             "&.MuiButtonBase-root:hover": {
               borderColor: "mediumseagreen",
               bgcolor: "mediumseagreen",
@@ -89,6 +105,7 @@ const ResultTable = ({ showInterviewForm, getData }) => {
             },
           }}
         >
+          <AddIcon sx={{ mr: 1 }} />
           Add New Record
         </Button>
       </Box>
@@ -96,44 +113,79 @@ const ResultTable = ({ showInterviewForm, getData }) => {
         <Table sx={{ minWidth: 700 }} aria-label="customized table">
           <TableHead sx={{ bgcolor: "#1c9c51" }}>
             <TableRow>
-              <StyledTableCell sx={{ color: "white" }}>Date</StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
-                Name
+              <StyledTableCell sx={{ color: "white", fontWeight: "600" }}>
+                Date
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
+                Candidate
+              </StyledTableCell>
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
                 Interviewer
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
                 Technology
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
                 Experience
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
                 Round
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
                 Communication
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
-                Practical
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
+                Practical Completion
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
-                Coding
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
+                Coding Standard
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
-                Technical
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
+                Technical Completion
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
                 Notes
               </StyledTableCell>
-              <StyledTableCell sx={{ color: "white" }} align="center">
+              <StyledTableCell
+                sx={{ color: "white", fontWeight: "600" }}
+                align="center"
+              >
                 Action
               </StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {resultData.map((row) => (
+            {rows.map((row) => (
               <StyledTableRow key={`${row.id}`}>
                 <StyledTableCell component="th" scope="row">
                   {row.date}
@@ -150,19 +202,24 @@ const ResultTable = ({ showInterviewForm, getData }) => {
                 </StyledTableCell>
                 <StyledTableCell align="center">{row.round}</StyledTableCell>
                 <StyledTableCell align="center">
-                  {row.communication}
+                  {row.communication || "-"}
                 </StyledTableCell>
                 <StyledTableCell align="center">
-                  {row.practical}
+                  {row.practical || "-"}
                 </StyledTableCell>
-                <StyledTableCell align="center">{row.coding}</StyledTableCell>
                 <StyledTableCell align="center">
-                  {row.technical}
+                  {row.coding || "-"}
+                </StyledTableCell>
+                <StyledTableCell align="center">
+                  {row.technical || "-"}
                 </StyledTableCell>
                 <StyledTableCell sx={{ textAlign: "justify" }}>
                   {row.notes}
                 </StyledTableCell>
-                <StyledTableCell align="center">
+                <StyledTableCell
+                  align="center"
+                  sx={{ display: "flex", flexDirection: "row" }}
+                >
                   <Button onClick={() => handleUpdateResult(row)}>
                     <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
                   </Button>
@@ -175,7 +232,7 @@ const ResultTable = ({ showInterviewForm, getData }) => {
           </TableBody>
         </Table>
       </TableContainer>
-    </>
+    </div>
   );
 };
 export default ResultTable;
