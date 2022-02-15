@@ -15,6 +15,7 @@ import {
   Button,
   Paper,
 } from "@mui/material";
+
 import { addResult, updateResult } from "../../Store/actions";
 
 import schema from "../Validation/schema";
@@ -140,19 +141,14 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
               <Grid item md={6} xs={12}>
                 <FormControl sx={{ width: "100%", mr: 2 }}>
                   <InputLabel id="demo-simple-select-label">
-                    Interviewer
+                    Interviewer Name
                   </InputLabel>
-                  {/* <MultipleSelectChip
-                    onBlur={handleBlur}
-                    onChange={handleChange}
-                    value={values.interviewer}
-                  /> */}
 
                   <Select
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     name="interviewer"
-                    label="Interviewer"
+                    label="Interviewer Name"
                     value={values.interviewer || ""}
                     onChange={handleChange}
                     onBlur={handleBlur}
@@ -161,11 +157,13 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     fullWidth
                     required
                   >
-                    <MenuItem value="Renish">Renish</MenuItem>
-                    <MenuItem value="Dhaval">Dhaval</MenuItem>
-                    <MenuItem value="Riddhi">Riddhi</MenuItem>
-                    <MenuItem value="Malay">Malay</MenuItem>
-                    <MenuItem value="Nirmal">Nirmal</MenuItem>
+                    <MenuItem value="Renish Dadhaniya">
+                      Renish Dadhaniya
+                    </MenuItem>
+                    <MenuItem value="Dhaval Thakral">Dhaval Thakral</MenuItem>
+                    <MenuItem value="Riddhi Kadiya">Riddhi Kadiya</MenuItem>
+                    <MenuItem value="Malay Patel">Malay Patel</MenuItem>
+                    <MenuItem value="Nirmal Jodhani">Nirmal Jodhani</MenuItem>
                   </Select>
                 </FormControl>
                 <ErrorMessage
@@ -187,8 +185,9 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     name="technology"
                     label="Technology"
                     onBlur={handleBlur}
+                    multiple
                     sx={{ textAlign: "left" }}
-                    value={values.technology || ""}
+                    value={values.technology || []}
                     onChange={handleChange}
                     error={Boolean(touched.technology && errors.technology)}
                     fullWidth
@@ -197,6 +196,10 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     <MenuItem value="ReactJs">ReactJs</MenuItem>
                     <MenuItem value="Angular">Angular</MenuItem>
                     <MenuItem value=".Net">.Net</MenuItem>
+                    <MenuItem value="Flutter">Flutter</MenuItem>
+                    <MenuItem value="Android">Android</MenuItem>
+                    <MenuItem value="PHP">PHP</MenuItem>
+                    <MenuItem value="IOS">IOS</MenuItem>
                   </Select>
                 </FormControl>
                 <ErrorMessage

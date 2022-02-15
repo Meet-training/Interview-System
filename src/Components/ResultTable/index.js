@@ -25,7 +25,7 @@ import AddIcon from "@mui/icons-material/Add";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
+    fontSize: 15,
   },
 }));
 
@@ -43,18 +43,8 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
   const dispatch = useDispatch();
 
   const resultData = useSelector((state) => state.interviewResult);
-  const [rows, setRows] = useState(resultData);
-  const [searchValue, setSearchValue] = useState("");
 
-  const requestSerch = () => {
-    const filteredRows = resultData.filter((item) => {
-      return (
-        item.date.toLowerCase().indexOf(searchValue) !== -1 ||
-        item.technology.toLowerCase().indexOf(searchValue) !== -1
-      );
-    });
-    setRows(filteredRows);
-  };
+  const [searchValue, setSearchValue] = useState("");
 
   const newAddRecordHandler = () => {
     showInterviewForm();
@@ -83,7 +73,6 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
           id="search"
           label="Search By Date And Technology"
           variant="outlined"
-          value={searchValue}
           onChange={(e) => setSearchValue(e.target.value)}
         />
         <Box sx={{ flex: "1 1 auto" }} />
@@ -110,7 +99,11 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
         </Button>
       </Box>
       <TableContainer component={Paper}>
-        <Table sx={{ minWidth: 700 }} aria-label="customized table">
+        <Table
+          sx={{ minWidth: 700 }}
+          aria-label="customized table"
+          data={searchValue}
+        >
           <TableHead sx={{ bgcolor: "#1c9c51" }}>
             <TableRow>
               <StyledTableCell sx={{ color: "white", fontWeight: "600" }}>
@@ -185,50 +178,65 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <StyledTableRow key={`${row.id}`}>
-                <StyledTableCell component="th" scope="row">
-                  {row.date}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.name}</StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.interviewer}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.technology}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.experience}
-                </StyledTableCell>
-                <StyledTableCell align="center">{row.round}</StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.communication || "-"}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.practical || "-"}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.coding || "-"}
-                </StyledTableCell>
-                <StyledTableCell align="center">
-                  {row.technical || "-"}
-                </StyledTableCell>
-                <StyledTableCell sx={{ textAlign: "justify" }}>
-                  {row.notes}
-                </StyledTableCell>
-                <StyledTableCell
-                  align="center"
-                  sx={{ display: "flex", flexDirection: "row" }}
-                >
-                  <Button onClick={() => handleUpdateResult(row)}>
-                    <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
-                  </Button>
-                  <Button onClick={() => removeHandler(row.id)}>
-                    <DeleteOutlineTwoToneIcon sx={{ color: "red" }} />
-                  </Button>
-                </StyledTableCell>
-              </StyledTableRow>
-            ))}
+            {resultData
+
+              .filter((row) => {
+                if (searchValue === "") {
+                  return row;
+                } else if (
+                  row.technology.includes(searchValue.technology) ||
+                  row.date.includes(searchValue.toLowerCase())
+                ) {
+                  return row;
+                }
+              })
+              .map((row) => (
+                <StyledTableRow key={`${row.id}`}>
+                  <StyledTableCell component="th" scope="row">
+                    {row.date}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.name}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.interviewer}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.technology}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.experience}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">{row.round}</StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.communication || "-"}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.practical || "-"}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.coding || "-"}
+                  </StyledTableCell>
+                  <StyledTableCell align="center">
+                    {row.technical || "-"}
+                  </StyledTableCell>
+                  <StyledTableCell sx={{ textAlign: "justify" }}>
+                    {row.notes}
+                  </StyledTableCell>
+                  <StyledTableCell
+                    align="center"
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Button onClick={() => handleUpdateResult(row)}>
+                      <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
+                    </Button>
+                    <Button onClick={() => removeHandler(row.id)}>
+                      <DeleteOutlineTwoToneIcon sx={{ color: "red" }} />
+                    </Button>
+                  </StyledTableCell>
+                </StyledTableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>

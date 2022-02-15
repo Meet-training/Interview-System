@@ -9,7 +9,9 @@ const schema = Yup.object().shape({
 
   interviewer: Yup.string().required("Please Select Interviewer Name!"),
 
-  technology: Yup.string().required("Please Select Technology!"),
+  technology: Yup.array()
+    .min(1, "Select Atleast One Technology")
+    .required("Please Select Technology!"),
 
   experience: Yup.number()
     .typeError("Please Enter Only Digit!")
