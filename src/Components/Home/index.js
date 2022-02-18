@@ -14,6 +14,7 @@ import {
   TextField,
   Button,
   Paper,
+  InputAdornment,
 } from "@mui/material";
 
 import { addResult, updateResult } from "../../Store/actions";
@@ -26,7 +27,8 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
     name: selectedResultField.name,
     interviewer: selectedResultField.interviewer,
     technology: selectedResultField.technology,
-    experience: selectedResultField.experience,
+    experienceInYear: selectedResultField.experienceInYear,
+    experienceInMonth: selectedResultField.experienceInMonth,
     round: selectedResultField.round,
     communication: selectedResultField.communication,
     practical: selectedResultField.practical,
@@ -208,23 +210,57 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   className="invalid-feedback"
                 />
               </Grid>
-              <Grid item md={6} xs={12}>
+              <Grid item md={3} xs={12}>
                 <TextField
                   sx={{ width: "100%", mr: 2 }}
                   type="text"
-                  name="experience"
+                  name="experienceInYear"
                   label="Experience"
                   onBlur={handleBlur}
-                  value={values.experience || ""}
+                  value={values.experienceInYear || ""}
                   onChange={handleChange}
                   variant="outlined"
-                  error={Boolean(touched.experience && errors.experience)}
+                  error={Boolean(
+                    touched.experienceInYear && errors.experienceInYear
+                  )}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">Year</InputAdornment>
+                    ),
+                  }}
                   required
                   fullWidth
                 />
                 <ErrorMessage
                   component="div"
-                  name="experience"
+                  name="experienceInYear"
+                  className="invalid-feedback"
+                />
+              </Grid>
+              <Grid item md={3} xs={12}>
+                <TextField
+                  sx={{ width: "100%", mr: 2 }}
+                  type="text"
+                  name="experienceInMonth"
+                  label="Experience"
+                  onBlur={handleBlur}
+                  value={values.experienceInMonth || ""}
+                  onChange={handleChange}
+                  variant="outlined"
+                  error={Boolean(
+                    touched.experienceInMonth && errors.experienceInMonth
+                  )}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">Month</InputAdornment>
+                    ),
+                  }}
+                  required
+                  fullWidth
+                />
+                <ErrorMessage
+                  component="div"
+                  name="experienceInMonth"
                   className="invalid-feedback"
                 />
               </Grid>

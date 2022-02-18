@@ -13,9 +13,17 @@ const schema = Yup.object().shape({
     .min(1, "Select Atleast One Technology")
     .required("Please Select Technology!"),
 
-  experience: Yup.number()
-    .typeError("Please Enter Only Digit!")
-    .required("Please Enter experience!"),
+  experienceInYear: Yup.number()
+    .integer()
+    .typeError("Please Enter Valid Year!")
+    .required("Please Enter experience In Year!"),
+
+  experienceInMonth: Yup.number()
+    .min(0, "Minimum Value 0!")
+    .max(12, "Max Value 12!")
+    .integer()
+    .typeError("Please Enter Valid Month!")
+    .required("Please Enter experience In Month!"),
 
   round: Yup.string().optional().required("Please Select Round!"),
 
