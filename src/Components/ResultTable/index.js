@@ -20,13 +20,9 @@ import {
   TableSortLabel,
 } from "@mui/material";
 
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import EditRoundedIcon from "@mui/icons-material/EditRounded";
-
-import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
-
-import { removeResult } from "../../Store/actions";
 
 import AddIcon from "@mui/icons-material/Add";
 
@@ -34,9 +30,7 @@ import SearchIcon from "@mui/icons-material/Search";
 
 import { CustomTablePagination } from "../Pagination";
 
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
-
-import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
+import AlertDialog from "../AlertDialog";
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
   "&:nth-of-type(odd)": {
@@ -49,9 +43,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const ResultTable = ({ showInterviewForm, getResult }) => {
-  const dispatch = useDispatch();
-
   const resultData = useSelector((state) => state.interviewResult);
+
+  const [result, setResult] = useState(resultData);
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -59,25 +53,7 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
 
   const [resultRowsPerPage, setResultRowsPerPage] = useState(2);
 
-  const [order, setOrder] = useState();
-
-  const [orderBy, setOrderBy] = useState();
-
-  const handleSortRequest = (sorting) => {
-    const isAsc = orderBy === sorting && order === "asc";
-    setOrder(isAsc ? "desc" : "asc");
-    setOrderBy(sorting);
-  };
-
-  function stableSort(array, comparator) {
-    const stabilized = array.map((el, index) => [el, index]);
-    stabilized.sort((a, b) => {
-      const order = comparator(a[0], b[0]);
-      if (order !== 0) return order;
-      return a[1] - b[-1];
-    });
-    return stabilized.map((el) => el[0]);
-  }
+  const [sortOrder, setSortOrder] = useState("asc");
 
   const newAddRecordHandler = () => {
     showInterviewForm();
@@ -88,20 +64,16 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
     showInterviewForm();
   };
 
-  const removeHandler = (id) => {
-    dispatch(removeResult(id));
-  };
-
   const handleChangePage = (e, newResultPage) => {
     setResultPage(newResultPage);
   };
 
   const handleChangeRowsPerPage = (e) => {
-    setResultRowsPerPage(e.target.value, 10);
+    setResultRowsPerPage(parseInt(e.target.value, 10));
     setResultPage(0);
   };
 
-  const filterResultdata = resultData.filter((row) => {
+  const filterResultdata = result.filter((row) => {
     if (searchValue === "") {
       return row;
     } else if (
@@ -111,6 +83,23 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
       return row;
     }
   });
+
+  const handleSortRequest = (column) => {
+    if (sortOrder === "asc") {
+      const sorted = [...result].sort((a, b) =>
+        a[column].toLowerCase > b[column].toLowerCase ? 1 : -1
+      );
+      setResult(sorted);
+      setSortOrder("desc");
+    }
+    if (sortOrder === "desc") {
+      const sorted = [...result].sort((a, b) =>
+        a[column].toLowerCase < b[column].toLowerCase ? 1 : -1
+      );
+      setResult(sorted);
+      setSortOrder("asc");
+    }
+  };
 
   return (
     <>
@@ -128,8 +117,8 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
             label="Search By Date And Technology"
             variant="outlined"
             InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
+              startAdornment: (
+                <InputAdornment position="start">
                   <SearchIcon />
                 </InputAdornment>
               ),
@@ -155,8 +144,7 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
             <StyledTableRow>
               <TableCell sx={{ color: "white", fontWeight: "600" }}>
                 <TableSortLabel
-                  active={orderBy === "date"}
-                  direction={orderBy === "date" ? order : "asc"}
+                  direction={sortOrder === "asc" ? "asc" : "desc"}
                   onClick={() => handleSortRequest("date")}
                 >
                   Date
@@ -264,9 +252,7 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
                   <Button onClick={() => handleUpdateResult(row)}>
                     <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
                   </Button>
-                  <Button onClick={() => removeHandler(row.id)}>
-                    <DeleteOutlineTwoToneIcon sx={{ color: "red" }} />
-                  </Button>
+                  <AlertDialog id={row.id} />
                 </TableCell>
               </StyledTableRow>
             ))}

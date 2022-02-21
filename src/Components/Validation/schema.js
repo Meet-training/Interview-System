@@ -20,7 +20,7 @@ const schema = Yup.object().shape({
 
   experienceInMonth: Yup.number()
     .min(0, "Minimum Value 0!")
-    .max(12, "Max Value 12!")
+    .max(11, "Max Value 11!")
     .integer()
     .typeError("Please Enter Valid Month!")
     .required("Please Enter experience In Month!"),
