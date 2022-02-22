@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { styled } from "@mui/material/styles";
 
@@ -42,10 +42,10 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const ResultTable = ({ showInterviewForm, getResult }) => {
-  const resultData = useSelector((state) => state.interviewResult);
+const InterviewResultTable = ({ showInterviewForm, getResult }) => {
+  const resultList = useSelector((state) => state.interviewResult);
 
-  const [result, setResult] = useState(resultData);
+  const [result, setResult] = useState([...resultList]);
 
   const [searchValue, setSearchValue] = useState("");
 
@@ -55,20 +55,20 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
 
   const [sortOrder, setSortOrder] = useState("asc");
 
-  const newAddRecordHandler = () => {
+  const addNewRecordHandler = () => {
     showInterviewForm();
   };
 
-  const handleUpdateResult = (values) => {
+  const updateResultHandler = (values) => {
     getResult(values);
     showInterviewForm();
   };
 
-  const handleChangePage = (e, newResultPage) => {
+  const pageChangeHandler = (e, newResultPage) => {
     setResultPage(newResultPage);
   };
 
-  const handleChangeRowsPerPage = (e) => {
+  const perPageRowChangeHandler = (e) => {
     setResultRowsPerPage(parseInt(e.target.value, 10));
     setResultPage(0);
   };
@@ -77,8 +77,10 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
     if (searchValue === "") {
       return row;
     } else if (
-      row.date.toLowerCase().indexOf(searchValue) !== -1 ||
-      JSON.stringify(row.technology).toLowerCase().indexOf(searchValue) !== -1
+      row.date.toLowerCase().includes(searchValue.toLowerCase()) ||
+      JSON.stringify(row.technology)
+        .toLowerCase()
+        .includes(searchValue.toLowerCase())
     ) {
       return row;
     }
@@ -87,19 +89,23 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
   const handleSortRequest = (column) => {
     if (sortOrder === "asc") {
       const sorted = [...result].sort((a, b) =>
-        a[column].toLowerCase > b[column].toLowerCase ? 1 : -1
+        a[column].toLowerCase() > b[column].toLowerCase() ? 1 : -1
       );
       setResult(sorted);
       setSortOrder("desc");
     }
     if (sortOrder === "desc") {
       const sorted = [...result].sort((a, b) =>
-        a[column].toLowerCase < b[column].toLowerCase ? 1 : -1
+        a[column].toLowerCase() < b[column].toLowerCase() ? 1 : -1
       );
       setResult(sorted);
       setSortOrder("asc");
     }
   };
+
+  useEffect(() => {
+    setResult(resultList);
+  }, [resultList]);
 
   return (
     <>
@@ -129,7 +135,7 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
           <Fab
             color="primary"
             aria-label="add"
-            onClick={newAddRecordHandler}
+            onClick={addNewRecordHandler}
             sx={{
               mr: 5,
               mt: 2,
@@ -229,7 +235,7 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
             {(resultRowsPerPage > 0
               ? filterResultdata.slice(
                   resultPage * resultRowsPerPage,
-                  (resultPage + 1) * resultRowsPerPage
+                  resultPage * resultRowsPerPage + resultRowsPerPage
                 )
               : filterResultdata
             ).map((row) => (
@@ -249,7 +255,7 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
                 <TableCell align="center">{row.technical || "-"}</TableCell>
                 <TableCell sx={{ textAlign: "justify" }}>{row.notes}</TableCell>
                 <TableCell align="center">
-                  <Button onClick={() => handleUpdateResult(row)}>
+                  <Button onClick={() => updateResultHandler(row)}>
                     <EditRoundedIcon sx={{ color: "mediumseagreen" }} />
                   </Button>
                   <AlertDialog id={row.id} />
@@ -258,9 +264,13 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
             ))}
           </TableBody>
         </Table>
-
+        {filterResultdata.length === 0 && (
+          <Typography variant="h6" sx={{ color: "red", mt: 2, mb: 2 }}>
+            No Record Found!
+          </Typography>
+        )}
         <Table>
-          <TableFooter>
+          <TableFooter sx={{ minWidth: "auto" }}>
             <StyledTableRow>
               <CustomTablePagination
                 rowsPerPageOptions={[2, 5, 7, { label: "All", value: -1 }]}
@@ -277,19 +287,14 @@ const ResultTable = ({ showInterviewForm, getResult }) => {
                     showLastButton: true,
                   },
                 }}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                onPageChange={pageChangeHandler}
+                onRowsPerPageChange={perPageRowChangeHandler}
               />
             </StyledTableRow>
           </TableFooter>
         </Table>
       </TableContainer>
-      {filterResultdata.length === 0 && (
-        <Typography variant="h6" sx={{ color: "red" }}>
-          No Record Found!
-        </Typography>
-      )}
     </>
   );
 };
-export default ResultTable;
+export default InterviewResultTable;

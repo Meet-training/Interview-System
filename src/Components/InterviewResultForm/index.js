@@ -21,22 +21,27 @@ import { addResult, updateResult } from "../../Store/actions";
 
 import schema from "../Validation/schema";
 
-const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
+const InterviewResultForm = ({
+  showResultTable,
+  selectedResultField,
+  updateField,
+}) => {
   const initialValue = {
-    date: selectedResultField.date,
-    name: selectedResultField.name,
-    interviewer: selectedResultField.interviewer,
-    technology: selectedResultField.technology,
-    experienceInYear: selectedResultField.experienceInYear,
-    experienceInMonth: selectedResultField.experienceInMonth,
-    round: selectedResultField.round,
-    communication: selectedResultField.communication,
-    practical: selectedResultField.practical,
-    coding: selectedResultField.coding,
-    technical: selectedResultField.technical,
-    notes: selectedResultField.notes,
+    date: selectedResultField.date || "",
+    name: selectedResultField.name || "",
+    interviewer: selectedResultField.interviewer || "",
+    technology: selectedResultField.technology || [],
+    experienceInYear: selectedResultField.experienceInYear || "",
+    experienceInMonth: selectedResultField.experienceInMonth || "",
+    round: selectedResultField.round || "",
+    communication: selectedResultField.communication || "",
+    practical: selectedResultField.practical || "",
+    coding: selectedResultField.coding || "",
+    technical: selectedResultField.technical || "",
+    notes: selectedResultField.notes || "",
     id: selectedResultField.id || "",
   };
+
   const resultData = useSelector((state) => state.interviewResult);
 
   let findResult = resultData.find(
@@ -45,7 +50,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
 
   const dispatch = useDispatch();
 
-  const showTableHandler = () => {
+  const exitHandler = () => {
     showResultTable();
   };
 
@@ -104,7 +109,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                 type="date"
                 name="date"
                 label="Date Of Interview"
-                value={values.date || ""}
+                value={values.date}
                 onBlur={handleBlur}
                 onChange={handleChange}
                 error={Boolean(touched.date && errors.date)}
@@ -127,7 +132,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   type="text"
                   name="name"
                   label="Candidate Name"
-                  value={values.name || ""}
+                  value={values.name}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -151,7 +156,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     id="demo-simple-select"
                     name="interviewer"
                     label="Interviewer Name"
-                    value={values.interviewer || ""}
+                    value={values.interviewer}
                     onChange={handleChange}
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
@@ -189,7 +194,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     onBlur={handleBlur}
                     multiple
                     sx={{ textAlign: "left" }}
-                    value={values.technology || []}
+                    value={values.technology}
                     onChange={handleChange}
                     error={Boolean(touched.technology && errors.technology)}
                     fullWidth
@@ -217,7 +222,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   name="experienceInYear"
                   label="Experience"
                   onBlur={handleBlur}
-                  value={values.experienceInYear || ""}
+                  value={values.experienceInYear}
                   onChange={handleChange}
                   variant="outlined"
                   error={Boolean(
@@ -244,7 +249,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   name="experienceInMonth"
                   label="Experience"
                   onBlur={handleBlur}
-                  value={values.experienceInMonth || ""}
+                  value={values.experienceInMonth}
                   onChange={handleChange}
                   variant="outlined"
                   error={Boolean(
@@ -276,7 +281,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     label="Round"
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
-                    value={values.round || ""}
+                    value={values.round}
                     onChange={handleChange}
                     error={Boolean(touched.round && errors.round)}
                     fullWidth
@@ -304,7 +309,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                     label="Communication"
                     onBlur={handleBlur}
                     sx={{ textAlign: "left" }}
-                    value={values.communication || ""}
+                    value={values.communication}
                     onChange={handleChange}
                     error={Boolean(
                       touched.communication && errors.communication
@@ -331,7 +336,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   type="text"
                   name="practical"
                   label="Practical Completion (0-100)%"
-                  value={values.practical || ""}
+                  value={values.practical}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -350,7 +355,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   type="text"
                   name="coding"
                   label="Coding Standard (0-100)%"
-                  value={values.coding || ""}
+                  value={values.coding}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -371,7 +376,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   type="text"
                   name="technical"
                   label="Technical Completion (0-100)%"
-                  value={values.technical || ""}
+                  value={values.technical}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -390,7 +395,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   type="text"
                   name="notes"
                   label="Notes"
-                  value={values.notes || ""}
+                  value={values.notes}
                   onBlur={handleBlur}
                   onChange={handleChange}
                   variant="outlined"
@@ -416,7 +421,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
             >
               <Button
                 variant="outlined"
-                onClick={showTableHandler}
+                onClick={exitHandler}
                 sx={{
                   mr: 1,
                   borderColor: "error.main",
@@ -429,7 +434,7 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
                   },
                 }}
               >
-                Back
+                Exit
               </Button>
               <Button
                 sx={{ borderRadius: 2 }}
@@ -448,4 +453,4 @@ const HomePage = ({ showResultTable, selectedResultField, updateField }) => {
   );
 };
 
-export default HomePage;
+export default InterviewResultForm;

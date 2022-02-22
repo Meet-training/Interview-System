@@ -11,10 +11,12 @@ import {
 import DeleteOutlineTwoToneIcon from "@mui/icons-material/DeleteOutlineTwoTone";
 
 import { useDispatch } from "react-redux";
+
 import { removeResult } from "../../Store/actions";
 
 const AlertDialog = ({ id }) => {
   const dispatch = useDispatch();
+
   const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
@@ -26,12 +28,12 @@ const AlertDialog = ({ id }) => {
   };
 
   const removeHandler = () => {
-    window.confirm(`id ${id}`);
     dispatch(removeResult(id));
+
     setOpen(false);
   };
   return (
-    <React.Fragment>
+    <>
       <Button onClick={handleClickOpen} sx={{ color: "red" }}>
         <DeleteOutlineTwoToneIcon />
       </Button>
@@ -53,7 +55,7 @@ const AlertDialog = ({ id }) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </React.Fragment>
+    </>
   );
 };
 

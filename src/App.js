@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Box } from "@mui/material";
 import "./App.css";
 import NavBar from "./Components/Navbar";
-import HomePage from "./Components/Home";
-import ResultTable from "./Components/ResultTable";
+import InterviewResultForm from "./Components/InterviewResultForm";
+import InterviewResultTable from "./Components/InterviewResultTable";
 
 const App = () => {
   const [showComponents, setShowComponents] = useState(false);
@@ -34,13 +34,13 @@ const App = () => {
         </Box>
 
         {showComponents ? (
-          <HomePage
+          <InterviewResultForm
             showResultTable={showTableHandler}
             selectedResultField={selectedResultField}
             updateField={handleUpdateField}
           />
         ) : (
-          <ResultTable
+          <InterviewResultTable
             showInterviewForm={showFormHandler}
             getResult={getResultHandler}
           />
